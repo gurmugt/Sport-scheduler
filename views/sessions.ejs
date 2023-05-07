@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <link href="./css/styles.css" rel="stylesheet">
+        <title>
+            <%= title %>
+        </title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="./css/styles.css" rel="stylesheet">
+    </head>
+    <body>
+        <body>
+            <div class= "grid  grid-cols-6">
+             <div class="col-start-3 col-span-2">
+             <%- include("header.ejs") %>
+             <form action="/addSession" method="post">
+                <% if (sessionRecord != null) { %>
+                    <input type="hidden" name="sessionId" value="<%= sessionRecord.id %>">
+                <% } %>
+                <div class="py-3">
+                    <label>When will this sport session be held?</label>
+                    <input type="datetime-local" name="date" class="border border-blue-300 rounded text-gray-900 w-full p-2"
+                    <% if (sessionRecord != null) { %>
+                        value="<%= new Date(sessionRecord.date).toISOString().slice(0, 16)%>"
+                    <% } %>
+                    step="1800">
+                </div>
+                <div class="py-3">
+                    <label>where will this session be played?</label>
+                    <input type="text" name="location" class="border border-blue-300 rounded text-gray-900 w-full p-2"
+                    <% if (sessionRecord != null) { %>
+                        value="<%= sessionRecord.location %>"
+                    <% } %>>
+                </div>
+                <div class="py-3">
+                    <label>who all will be joining you in this session?</label>
+                    <input type="text" name="players" class="border border-blue-300 rounded text-gray-900 w-full p-2" required
+                    <% if (sessionRecord != null) { %>
+                        value="<%= players%>"
+                    <% } %>>
+                </div>
+
+                <div class="py-3">
+                    <label>How many more players do you need?</label>
+                    <input type="number" name="numPlayers"  class="border border-blue-300 rounded text-gray-900 w-full p-2" required
+                    <% if (sessionRecord != null) { %>
+                        value="<%= sessionRecord.numPlayers%>"
+                    <% } %>>
+                </div>
+                <div class="py-3">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-800 text-white px-5 py-1.5 rounded font-medium mr-2 mb-2">Submit</button>
+                </div>
+             </form>
+             </div>
+            </div>
+        </body>
+        

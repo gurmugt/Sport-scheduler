@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./css/styles.css" rel="stylesheet">
+    <title><%= title %></title>
+ <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+.container{
+    display: flex;
+    flex-direction:row;
+    align-items: center; 
+        }
+        
+        .player-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 40px;
+  border: 2px solid black;
+  margin: 5px;
+  padding: 0 5px;
+  width: 100px;
+}
+    </style>
+
+    <script>
+         function deletePlayers(id) {
+          fetch(`/modifySessions/${id}`, {
+            method: "delete",
+            headers: { "Content-Type": "application/json" },
+          })
+            .then((res) => {
+              if (res.ok) {
+                window.location.reload();
+              }
+            })
+            .catch((error) => console.error(error));
+        }
+
+        function deleteSessions(id) {
+          fetch(`/modifySessions/sessions/${id}`, {
+            method: "delete",
+            headers: { "Content-Type": "application/json" },
+          })
+            .then((res) => {
+              if (res.ok) {
+                window.location.href = '/';
+              }
+            })
+            .catch((error) => console.error(error));
+        }
+
+    </script>
+</head>
+<body>
+    <h3>Sport Sessions #1</h3>
+    <p>This session is scheduled for <%=session.date%>, to be played at "<%=session.location%>"</p>
+    <h5>Players</h5>
+    <div class="container">
+    <% for(let i = 0; i < playersArray.length; i++) { %>
+        <div class="player-wrapper">
+            <div class="player"><%= playersArray[i].name %></div>
+            <a href="#" onclick="deletePlayers('<%=playersArray[i].id %>')">
+             <img src="https://img.icons8.com/material-two-tone/24/null/multiply.png"/>
+            </a>
+          </div>          
+        <% } %>
+    </div>
+    <a href="/addSession/<%= session.id %>" class="mr-8">Edit Session</a>
+    <button type="reset" onclick="deleteSessions(<%= session.id %>)">Cancel Session</button>
+</body>
+</html>
