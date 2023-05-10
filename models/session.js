@@ -4,26 +4,29 @@ const {
 
 module.exports = (sequelize, DataTypes) => {
   class Session extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    // eslint-disable-next-line no-unused-vars
     static associate(models) {
-      // define association here
+      this.belongsTo(models.Sport, {
+        foreignKey: {
+          name: 'sportId',
+          allowNull: false,
+          onDelete: 'CASCADE',
+        },
+      });
+
       this.hasMany(models.playersList, {
         foreignKey: 'sessionId',
+        onDelete: 'CASCADE',
       });
     }
 
     static createSessions({
-      date, location, numPlayers,
+      date, location, numPlayers, sportId,
     }) {
       return this.create({
         date,
         location,
         numPlayers,
+        sportId,
       });
     }
 
@@ -56,6 +59,10 @@ module.exports = (sequelize, DataTypes) => {
     date: DataTypes.DATE,
     location: DataTypes.STRING,
     numPlayers: DataTypes.STRING,
+    sportId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   }, {
     sequelize,
     modelName: 'Session',

@@ -11,7 +11,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     // eslint-disable-next-line no-unused-vars
     static associate(models) {
-      // define association here
+      this.belongsTo(models.Session, {
+        foreignKey: {
+          name: 'sessionId',
+          allowNull: false,
+          onDelete: 'CASCADE',
+        },
+      });
     }
 
     // eslint-disable-next-line no-empty-function

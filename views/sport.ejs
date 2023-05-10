@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <link href="./css/styles.css" rel="stylesheet">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <title>
+            <%= title %>
+        </title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="./css/styles.css" rel="stylesheet">
+    </head>
+    <body>
+            <div class= "grid  grid-cols-6">
+             <div class="col-start-3 col-span-4">
+      
+                <p><%= getSport.name %></p>
+                <h4>Sessions</h4>
+                <div class="sessions">
+                    <% if (sessionRecord.length)  { %>
+                        <% for( let i = 0; i < sessionRecord.length; i++ ) { %>
+                            <div class="session">
+                                <div>
+                                    <h3>Location:</h3>
+                                    <p><%= sessionRecord[i].location %></p>
+                                </div>
+                                <div>
+                                    <h3>Date:</h3>
+                                    <p><%= sessionRecord[i].date %></p>
+                                </div>
+                                <div>
+                                    <h3>Number of Players:</h3>
+                                    <p><%= sessionRecord[i].numPlayers %></p>
+                                </div>
+                            </div>
+                        <% } %>
+                    <% } else { %>
+                        <p>No sessions available to join right now.Create one?</p>
+                    <% } %>
+                </div>
+                <a href="/sport/<%= getSport.id %>/addSession">Create a new session</a> <br>
+                <a href="#">View previous sessions</a>
+             </div>
+            </div>
+</body>
+</html>

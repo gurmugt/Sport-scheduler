@@ -20,13 +20,10 @@
                 <% if (sessionRecord != null) { %>
                     <input type="hidden" name="sessionId" value="<%= sessionRecord.id %>">
                 <% } %>
+                <input type="hidden" name="sportId" value="<%= sportId %>">
                 <div class="py-3">
                     <label>When will this sport session be held?</label>
-                    <input type="datetime-local" name="date" class="border border-blue-300 rounded text-gray-900 w-full p-2"
-                    <% if (sessionRecord != null) { %>
-                        value="<%= new Date(sessionRecord.date).toISOString().slice(0, 16)%>"
-                    <% } %>
-                    step="1800">
+                    <input type="datetime-local" name="date" class="border border-blue-300 rounded text-gray-900 w-full p-2" required <% if (sessionRecord != null) { %>value="<%= new Date(sessionItem.dueDate).toISOString().slice(0, 16)  %>"<% } %>>
                 </div>
                 <div class="py-3">
                     <label>where will this session be played?</label>
@@ -37,10 +34,7 @@
                 </div>
                 <div class="py-3">
                     <label>who all will be joining you in this session?</label>
-                    <input type="text" name="players" class="border border-blue-300 rounded text-gray-900 w-full p-2" required
-                    <% if (sessionRecord != null) { %>
-                        value="<%= players%>"
-                    <% } %>>
+                    <input type="text" name="players" class="border border-blue-300 rounded text-gray-900 w-full p-2" required>
                 </div>
 
                 <div class="py-3">
