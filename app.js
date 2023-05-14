@@ -89,7 +89,8 @@ app.post('/users', async (request, response) => {
 
   try {
     const user = await User.create({
-      name: request.body.name,
+      firstName: request.body.firstName,
+      lastName: request.body.lastName,
       email: request.body.email,
       password: hashedPwd,
     });
@@ -110,17 +111,10 @@ app.get('/login', (request, response) => {
   });
 });
 
-app.post(
-  '/session',
-  passport.authenticate('local', {
-    failureRedirect: '/login',
-    failureFlash: true,
-  }),
-  (request, response) => {
-    console.log(request.user);
-    response.redirect('/addSport');
-  },
-);
+app.post('/session', passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }), (request, response) => {
+  console.log(request.user);
+  response.redirect('/addSport');
+});
 
 app.get('/', async (request, response) => {
   response.render('index', {
@@ -160,45 +154,6 @@ app.post('/addSession', async (request, response) => {
   }
 });
 
-app.get('/addSession/:id', async (request, response) => {
-  try {
-    const sessionRecord = await Session.findByPk(request.params.id);
-    const playersArray = await playersList.findAll({
-      where: {
-        sessionId: sessionRecord.id,
-      },
-    });
-    const players = playersArray.map((player) => player.name).join(',');
-    response.render('sessions', {
-      title: 'Edit Session',
-      sessionRecord,
-      players,
-    });
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-// eslint-disable-next-line consistent-return
-app.get('/modifySessions/:id', async (request, response) => {
-  try {
-    const session = await Session.findByPk(request.params.id);
-    const playersArray = await playersList.findAll({
-      where: {
-        sessionId: session.id,
-      },
-    });
-    response.render('modifySessions', {
-      title: 'Edit Session',
-      session,
-      playersArray,
-    });
-  } catch (error) {
-    console.log(error);
-    return response.status(422).json(error);
-  }
-});
-
 // Rendering addSport
 app.get('/addSport', (request, response) => {
   response.render('addSport', {
@@ -231,6 +186,47 @@ app.get('/sport/:id', async (request, response) => {
     getSport,
     sessionRecord,
   });
+});
+
+app.get('/addSession/:id', async (request, response) => {
+  try {
+    const sessionRecord = await Session.findByPk(request.params.id);
+    const playersArray = await playersList.findAll({
+      where: {
+        sessionId: sessionRecord.id,
+      },
+    });
+    const players = playersArray.map((player) => player.name).join(',');
+    response.render('sessions', {
+      title: 'Edit Session',
+      sessionRecord,
+      players,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+// eslint-disable-next-line consistent-return
+app.get('/modifySessions/:id', async (request, response) => {
+  try {
+    const getSport = await Sport.findByPk(request.params.id);
+    const session = await Session.findByPk(request.params.id);
+    const playersArray = await playersList.findAll({
+      where: {
+        sessionId: session.id,
+      },
+    });
+    response.render('modifySessions', {
+      title: 'Edit Session',
+      session,
+      playersArray,
+      getSport,
+    });
+  } catch (error) {
+    console.log(error);
+    return response.status(422).json(error);
+  }
 });
 
 app.get('/sport/:sportId/addSession', async (request, response) => {
@@ -275,7 +271,17 @@ app.delete('/modifySessions/:id', async (request, response) => {
 app.delete('/modifySessions/sessions/:id', async (request, response) => {
   try {
     await Session.removeSessions(request.params.id);
-    return response.render('index');
+    return response.json({ success: true });
+  } catch (error) {
+    console.log(error);
+    return response.status(422).json(error);
+  }
+});
+
+app.delete('/sport/delete/:id', async (request, response) => {
+  try {
+    await Sport.deleteSport(request.params.id);
+    return response.json({ success: true });
   } catch (error) {
     console.log(error);
     return response.status(422).json(error);

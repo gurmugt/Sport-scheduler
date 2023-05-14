@@ -13,6 +13,14 @@ module.exports = (sequelize, DataTypes) => {
         name,
       });
     }
+
+    static deleteSport(id) {
+      return this.destroy({
+        where: {
+          id,
+        },
+      });
+    }
   }
 
   Sport.init({

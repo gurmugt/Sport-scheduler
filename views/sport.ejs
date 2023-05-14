@@ -11,6 +11,25 @@
         </title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="./css/styles.css" rel="stylesheet">
+
+        <style>
+         .edit {
+         position: absolute;
+         top: 30px;
+         right: 130px;
+         color:blue;
+           }
+
+        .delete {
+         position: absolute;
+        right: 70px;
+        top: 30px;
+        color:blue;
+         }
+
+
+        </style>
+
     </head>
     <body>
             <div class= "grid  grid-cols-6">
@@ -37,12 +56,30 @@
                             </div>
                         <% } %>
                     <% } else { %>
-                        <p>No sessions available to join right now.Create one?</p>
+                        <p>There are no sessions available to join right now.Create one?</p>
                     <% } %>
                 </div>
                 <a href="/sport/<%= getSport.id %>/addSession">Create a new session</a> <br>
-                <a href="#">View previous sessions</a>
+                <a href="#">View previous sessions</a>    
+                <a href="#" class="edit">Edit</a>
+                <button class="delete" type="reset" onclick="deleteSport(<%= getSport.id %>)">Delete</button>            
              </div>
             </div>
+
+         <script>
+              function deleteSport(id) {
+            fetch(`/sport/delete/${id}`, {
+                method: "delete",
+                headers: { "Content-Type": "application/json" },
+            })
+            .then((res) => {
+                if (res.ok) {
+                    window.location.href = '/';
+                }
+            })
+            .catch((error) => console.error(error));
+        }
+         </script>      
+
 </body>
 </html>

@@ -4,72 +4,127 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="./css/styles.css" rel="stylesheet">
     <title><%= title %></title>
- <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-.container{
-    display: flex;
-    flex-direction:row;
-    align-items: center; 
+        .container{
+            display: flex;
+            flex-direction: row;
+            align-items: center; 
         }
         
         .player-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 40px;
-  border: 2px solid black;
-  margin: 5px;
-  padding: 0 5px;
-  width: 100px;
-}
-    </style>
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 40px;
+            border: 2px solid black;
+            margin: 5px;
+            padding: 0 5px;
+            width: 100px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            margin: 0;
+            padding: 20px;
+            background-color: #f7fafc;
+        }
 
+        .header {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .player-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 40px;
+            border: 3px solid green;
+            margin: 5px;
+            padding: 0 10px;
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .player {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        #title{
+            font-size: 16px;
+            font-weight: bold; 
+            margin-top: 20px;
+        }
+
+        button {
+            background-color: #000;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body style="display: flex; justify-content: center; align-items: center;">
+    <div style="display: flex; justify-content: center; align-items: center;">
+        <div>
+            <h1 class="header"><%= getSport.name %> Session #1</h1>
+            <p>This session is scheduled on <%=session.date%>, to be played at "<%=session.location%>".</p>
+
+            <h5 id="title">Players</h5>
+            <div class="container">
+                <% for(let i = 0; i < playersArray.length; i++) { %>
+                <div class="player-wrapper">
+                    <div class="player"><%= playersArray[i].name %></div>
+                    <a href="#" onclick="deletePlayers('<%=playersArray[i].id %>')">
+                        <img src="https://img.icons8.com/material-two-tone/24/null/multiply.png"/>
+                    </a>
+                </div>          
+                <% } %>
+            </div>
+            <a href="/addSession/<%= session.id %>" class="mr-8">Edit Session</a>
+            <button type="reset" onclick="deleteSessions(<%= session.id %>)">Cancel Session</button>
+        </div>
+    </div>
     <script>
-         function deletePlayers(id) {
-          fetch(`/modifySessions/${id}`, {
-            method: "delete",
-            headers: { "Content-Type": "application/json" },
-          })
+        function deletePlayers(id) {
+            fetch(`/modifySessions/${id}`, {
+                method: "delete",
+                headers: { "Content-Type": "application/json" },
+            })
             .then((res) => {
-              if (res.ok) {
-                window.location.reload();
-              }
+                if (res.ok) {
+                    window.location.reload();
+                }
             })
             .catch((error) => console.error(error));
         }
 
         function deleteSessions(id) {
-          fetch(`/modifySessions/sessions/${id}`, {
-            method: "delete",
-            headers: { "Content-Type": "application/json" },
-          })
+            fetch(`/modifySessions/sessions/${id}`, {
+                method: "delete",
+                headers: { "Content-Type": "application/json" },
+            })
             .then((res) => {
-              if (res.ok) {
-                window.location.href = '/';
-              }
+                if (res.ok) {
+                    window.location.href = '/';
+                }
             })
             .catch((error) => console.error(error));
         }
-
     </script>
-</head>
-<body>
-    <h3>Sport Sessions #1</h3>
-    <p>This session is scheduled for <%=session.date%>, to be played at "<%=session.location%>"</p>
-    <h5>Players</h5>
-    <div class="container">
-    <% for(let i = 0; i < playersArray.length; i++) { %>
-        <div class="player-wrapper">
-            <div class="player"><%= playersArray[i].name %></div>
-            <a href="#" onclick="deletePlayers('<%=playersArray[i].id %>')">
-             <img src="https://img.icons8.com/material-two-tone/24/null/multiply.png"/>
-            </a>
-          </div>          
-        <% } %>
-    </div>
-    <a href="/addSession/<%= session.id %>" class="mr-8">Edit Session</a>
-    <button type="reset" onclick="deleteSessions(<%= session.id %>)">Cancel Session</button>
 </body>
 </html>

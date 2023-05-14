@@ -1,22 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width,initial-scale=1.0">
-        <link href="./css/styles.css" rel="stylesheet">
-        <title>Sport Scheduler</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link href="./css/styles.css" rel="stylesheet">
-    </head>
-    <body>
-       <div class= "grid  grid-cols-6">
-        <div class="col-start-3 col-span-2">
-          <%- include("header.ejs") %>
-          <p class="py-2 text-gray-500">WELCOME TO SPORT SCHEDULER</p>
-          <p class="py-2">New here? <a href="/signup" class="text-blue-500">signup now</a></p>
-          <p class="py-2">Already have an account? <a href="/login" class="text-blue-500">sign-in</a></p>
-        </div>
-      </div>
-    </body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sport Scheduler</title>
+    <style>
+      body {
+        background: linear-gradient(90deg, #667eea, #764ba2);
+      }
+
+      .btn {
+        background-color:green;
+        color:black;
+        border-radius:9999px;
+        font-size: 1.2rem;
+        padding: 0.8rem 1.8rem;
+        box-shadow: 0 5px 10px rgba(139, 92, 246, 0.4);
+        transition: all 0.2s ease-in-out;
+      }
+
+      .btn:hover {
+        background-color: greenyellow;
+        transform: translateY(-2px);
+        box-shadow: 0 7px 14px rgba(139, 92, 246, 0.5);
+      }
+
+      .header {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: black;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+
+      .title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #fff;
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+
+      .subtitle {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color:yellow;
+        text-align: center;
+        margin-bottom: 4rem;
+      }
+
+      .link {
+        font-size: 1.2rem;
+        color: blue;
+        text-decoration: none;
+        transition: all 0.2s ease-in-out;
+      }
+
+      .link:hover {
+        color:goldenrod;
+      }
+
+      .link-paragraph{
+        font-size: 1.5rem;
+        font-weight: bold;
+        color:black;
+        margin-bottom: 2rem;
+      }
+
+      .centered {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 3rem;
+      }
+    </style>
+  </head>
+  <body>
+          <h1 class="header">SPORT SCHEDULER</h1>
+          <h2 class="title">Game On! Never Miss a Beat with Our Sports Scheduler!</h2>
+          <p class="subtitle">Sign up now and stay on top of all your favorite sports</p>
+          <div class="centered">
+            <a href="/signup" class="btn">Sign Up Now</a>
+            <p class="link-paragraph">Already have an account? <a href="/login" class="link">Sign in</a></p>
+          </div>
+  </body>
 </html>
