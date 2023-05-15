@@ -134,7 +134,7 @@ app.post('/addSession', async (request, response) => {
         date,
         location: request.body.location,
         numPlayers: request.body.numPlayers,
-        id,
+        sportId: request.body.sportId,
       });
       await playersList.updatePlayers(request.body.players, id);
     } else {
