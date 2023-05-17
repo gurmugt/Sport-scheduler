@@ -83,22 +83,44 @@ app.get('/signup', (request, response) => {
   });
 });
 
+// eslint-disable-next-line consistent-return
 app.post('/users', async (request, response) => {
-  const hashedPwd = await bcrypt.hash(request.body.password, saltRounds);
-  console.log(hashedPwd);
+  const {
+    firstName, lastName, email, password, role, adminKey,
+  } = request.body;
+  const hashedPwd = await bcrypt.hash(password, saltRounds);
 
   try {
-    const user = await User.create({
-      firstName: request.body.firstName,
-      lastName: request.body.lastName,
-      email: request.body.email,
-      password: hashedPwd,
-    });
+    let user;
+    if (role === 'admin') {
+      const adminSecretValue = 'admin123';
+      if (adminKey === adminSecretValue) {
+        console.log('role:', role);
+        user = await User.create({
+          firstName,
+          lastName,
+          email,
+          password: hashedPwd,
+          role,
+        });
+      } else {
+        return response.status(403).send('Incorrect adminKey');
+      }
+    } else {
+      console.log('role:', role);
+      user = await User.create({
+        firstName,
+        lastName,
+        email,
+        password: hashedPwd,
+        role,
+      });
+    }
     request.login(user, (err) => {
       if (err) {
         console.log(err);
       }
-      response.redirect('/addSport');
+      response.redirect('/sportList');
     });
   } catch (error) {
     console.log(error);
@@ -113,7 +135,7 @@ app.get('/login', (request, response) => {
 
 app.post('/session', passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }), (request, response) => {
   console.log(request.user);
-  response.redirect('/addSport');
+  response.redirect('/sportList');
 });
 
 app.get('/', async (request, response) => {
@@ -124,33 +146,41 @@ app.get('/', async (request, response) => {
 
 app.post('/addSession', async (request, response) => {
   try {
-    const id = parseInt(request.body.sessionId);
+    const { sessionId, sportId } = request.body;
     const date = new Date(request.body.date);
-    console.log(id);
-    // eslint-disable-next-line no-restricted-globals
-    if (!isNaN(id)) {
+    console.log(sessionId);
+
+    if (sessionId) {
       console.log('Updating');
       await Session.updateSessions({
         date,
         location: request.body.location,
         numPlayers: request.body.numPlayers,
-        sportId: request.body.sportId,
+        id: sessionId,
       });
-      await playersList.updatePlayers(request.body.players, id);
+      await playersList.updatePlayers(request.body.players, sessionId);
+      console.log('Before Redirection');
+      console.log(sportId);
+      console.log(sessionId);
+      response.redirect(302, `/${sportId}/modifySessions/${sessionId}`);
     } else {
       console.log('Creating');
+      console.log(request.body.numPlayers);
       const session = await Session.createSessions({
         date: request.body.date,
         location: request.body.location,
         numPlayers: request.body.numPlayers,
         sportId: request.body.sportId,
+        userId: request.user.id,
       });
-      await playersList.createPlayers(request.body.players, session.id);
+
+      await playersList.createPlayers(request.body.players, request.user.firstName, session.id);
       console.log('create player id', session.id);
+      response.redirect(302, `/${request.body.sportId}/modifySessions/${session.id}`);
     }
-    response.redirect(302, `/modifySessions/${request.body.sportId}`);
   } catch (error) {
     console.log(error);
+    response.status(500).send('Error occurred while updating session.');
   }
 });
 
@@ -181,10 +211,41 @@ app.get('/sport/:id', async (request, response) => {
       sportId: getSport.id,
     },
   });
+  const { user } = request;
+  // console.log('user is', user.role)
   response.render('sport', {
-    title: 'Sport List',
+    title: 'Sports',
     getSport,
     sessionRecord,
+    user,
+  });
+});
+
+// Fetching all the available sports
+app.get('/sportList', async (request, response) => {
+  const { firstName } = request.user;
+  const sportList = await Sport.findAll();
+  const player_sessions_id = (await
+  playersList.findAll({ where: { name: firstName } })).map((player) => player.sessionId);
+  const joined_sessions = await Session.joined_sessions(player_sessions_id);
+  console.log('joined sessions length', joined_sessions.length);
+  console.log(player_sessions_id);
+  console.log(joined_sessions);
+  console.log('player sessions id', player_sessions_id.length);
+  const { user } = request;
+  response.render('sportList', {
+    title: 'Available Sports',
+    sportList,
+    user,
+    joined_sessions,
+
+  });
+});
+
+// direct from sportList to addSport
+app.get('/sportList/addSport', async (request, response) => {
+  response.render('addSport', {
+    title: 'Create Sport',
   });
 });
 
@@ -201,6 +262,7 @@ app.get('/addSession/:id', async (request, response) => {
       title: 'Edit Session',
       sessionRecord,
       players,
+      sportId: request.body.sportId,
     });
   } catch (error) {
     console.log(error);
@@ -208,10 +270,12 @@ app.get('/addSession/:id', async (request, response) => {
 });
 
 // eslint-disable-next-line consistent-return
-app.get('/modifySessions/:id', async (request, response) => {
+app.get('/:sportId/modifySessions/:id', async (request, response) => {
   try {
-    const getSport = await Sport.findByPk(request.params.id);
+    const getSport = await Sport.findByPk(request.params.sportId);
     const session = await Session.findByPk(request.params.id);
+    const { user } = request;
+    console.log('Is user really admin', user.role);
     const playersArray = await playersList.findAll({
       where: {
         sessionId: session.id,
@@ -220,6 +284,7 @@ app.get('/modifySessions/:id', async (request, response) => {
     response.render('modifySessions', {
       title: 'Edit Session',
       session,
+      user,
       playersArray,
       getSport,
     });
@@ -229,6 +294,7 @@ app.get('/modifySessions/:id', async (request, response) => {
   }
 });
 
+// Goto sessionCreate
 app.get('/sport/:sportId/addSession', async (request, response) => {
   response.render('sessions', {
     title: 'Add Sessions',
@@ -247,7 +313,7 @@ app.get('/sport/:sportId/addSesssion/:sessionId', async (req, resp) => {
       sessionId: req.params.sessionId,
     },
   });
-  const players = playersArray.map((player) => player.name).join(',');
+  const players = playersList.map((player) => player.name).join(',');
   resp.render('addSession', {
     title: 'Create New Session',
     sessionRecord,
@@ -285,6 +351,59 @@ app.delete('/sport/delete/:id', async (request, response) => {
   } catch (error) {
     console.log(error);
     return response.status(422).json(error);
+  }
+});
+
+// Routing for join session
+app.post('/sport/:sportId/createSession/:sessionId/join/:userid', async (request, response) => {
+  const user = await User.findByPk(Number(request.params.userid));
+  try {
+    const ses = await Session.findByPk(request.params.sessionId);
+    await Session.update(
+      {
+        numPlayers: ses.numPlayers - 1,
+      },
+      {
+        where: {
+          id: request.params.sessionId,
+        },
+      },
+    );
+    await playersList.create({
+      name: user.firstName,
+      sessionId: request.params.sessionId,
+    });
+    response.redirect(302, `/${request.params.sportId}/modifySessions/${request.params.sessionId}`);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+// Routing for leave sessions
+app.post('/sport/:sportId/createSession/:sessionId/leave/:userid', async (request, res) => {
+  const user = await User.findByPk(Number(request.params.userid));
+
+  try {
+    const ses = await Session.findByPk(request.params.sessionId);
+    await Session.update(
+      {
+        numPlayers: ses.numPlayers + 1,
+      },
+      {
+        where: {
+          id: request.params.sessionId,
+        },
+      },
+    );
+    await playersList.destroy({
+      where: {
+        name: user.firstName,
+        sessionId: request.params.sessionId,
+      },
+    });
+    res.redirect(302, `/${request.params.sportId}/modifySessions/${request.params.sessionId}`);
+  } catch (error) {
+    console.log(error);
   }
 });
 

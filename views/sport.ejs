@@ -13,6 +13,15 @@
         <link href="./css/styles.css" rel="stylesheet">
 
         <style>
+            .myCustomClass {
+                display: inline-block;
+                padding: 5px;
+                margin-bottom:10px;
+                border-radius:5px;
+                color: black;
+                border: 3px solid black;
+                }
+
          .edit {
          position: absolute;
          top: 30px;
@@ -27,43 +36,40 @@
         color:blue;
          }
 
-
         </style>
 
     </head>
     <body>
-            <div class= "grid  grid-cols-6">
-             <div class="col-start-3 col-span-4">
+    <div class= "grid  grid-cols-6">
+    <div class="col-start-3 col-span-4">
       
-                <p><%= getSport.name %></p>
-                <h4>Sessions</h4>
-                <div class="sessions">
-                    <% if (sessionRecord.length)  { %>
-                        <% for( let i = 0; i < sessionRecord.length; i++ ) { %>
-                            <div class="session">
-                                <div>
-                                    <h3>Location:</h3>
-                                    <p><%= sessionRecord[i].location %></p>
-                                </div>
-                                <div>
-                                    <h3>Date:</h3>
-                                    <p><%= sessionRecord[i].date %></p>
-                                </div>
-                                <div>
-                                    <h3>Number of Players:</h3>
-                                    <p><%= sessionRecord[i].numPlayers %></p>
-                                </div>
-                            </div>
-                        <% } %>
-                    <% } else { %>
-                        <p>There are no sessions available to join right now.Create one?</p>
+     <p><%= getSport.name %></p>
+    <h4>Sessions</h4>
+      <div class="sessions">
+       <% if (sessionRecord.length)  { %>
+       <h2>Upcoming Sessions</h2>
+        <% for( let i = 0; i < sessionRecord.length; i++ ) { %>
+      <a href="/<%= getSport.id %>/modifySessions/<%= sessionRecord[i].id %>">
+            <div>
+                <h5 class="myCustomClass">
+                    <%= getSport.name %>, <%= sessionRecord[i].date %>, <%= sessionRecord[i].numPlayers %> slots
+                </h5>  
+            </div>                                                                 
+        </a>
+    <% } %>
+ <% } else { %>
+ <p>There are no sessions available to join right now.Create one?</p>
                     <% } %>
-                </div>
-                <a href="/sport/<%= getSport.id %>/addSession">Create a new session</a> <br>
-                <a href="#">View previous sessions</a>    
-                <a href="#" class="edit">Edit</a>
-                <button class="delete" type="reset" onclick="deleteSport(<%= getSport.id %>)">Delete</button>            
-             </div>
+ </div>
+ <a href="/sport/<%= getSport.id %>/addSession">Create a new session</a> <br>
+ <a href="#">View previous sessions</a> 
+ 
+<!-- Adminsrative actions -->
+ <% if (user && user.role === 'admin') { %>   
+ <a href="#" class="edit">Edit</a>
+ <button class="delete" type="reset" onclick="deleteSport(<%= getSport.id %>)">Delete</button>            
+ <% } %>
+            </div>
             </div>
 
          <script>

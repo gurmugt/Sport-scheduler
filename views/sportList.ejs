@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+
+        h3 {
+            color: #333;
+        }
+
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        a:hover {
+            color: #0056b3;
+        }
+
+        p {
+            margin-top: 10px;
+        }
+
+        .myCustomClass {
+                display: inline-block;
+                padding: 5px;
+                margin-bottom:10px;
+                border-radius:5px;
+                color: black;
+                border: 3px solid black;
+                }
+    </style>
+</head>
+<body>
+    <h3>Welcome <%= user.firstName%> <%= user.lastName%> </h3>
+
+    <!-- Adminsrative actions -->
+    <% if (user && user.role === 'admin') { %>   
+    <h4>Adminstrative Actions</h4>
+    <a href="/sportList/addSport">Create a new sport</a> <br>
+    <a href="#">View reports</a>
+    <% } %>
+
+   <!-- rendering joined sessions -->
+    <% if (joined_sessions.length)  { %>
+        <h4>you have the following upcoming Sessions</h4>
+         <% for( let i = 0; i < joined_sessions.length; i++ ) { %>
+       <a href="/<%= joined_sessions[i].sportId %>/modifySessions/<%= joined_sessions[i].id %>">
+             <div>
+                 <h5 class="myCustomClass">
+          <%= joined_sessions[i].date %>  <%= joined_sessions[i].numPlayers %>  slots
+                 </h5>  
+             </div>                                                                 
+         </a>
+     <% } %>
+     <% } %>
+    <% if (sportList.length)  { %>
+        <p>The following sports are available. Please select one</p>
+        <% for( let i = 0; i < sportList.length; i++ ) { %>
+          <a href="/sport/<%=sportList[i].id%>"><%= sportList[i].name %></a> <br>
+            <% } %>
+     <% } else { %>
+        <p>There are no sports available for scheduling a session</p>
+        <% } %>
+</body>
+</html>

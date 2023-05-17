@@ -21,14 +21,30 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
     }
+
+    static updateSport(id, { name }) {
+      return this.update(
+        {
+          name,
+        },
+        {
+          where: {
+            id,
+          },
+        },
+      );
+    }
   }
 
-  Sport.init({
-    name: DataTypes.STRING,
-  }, {
-    sequelize,
-    modelName: 'Sport',
-  });
+  Sport.init(
+    {
+      name: DataTypes.STRING,
+    },
+    {
+      sequelize,
+      modelName: 'Sport',
+    },
+  );
 
   return Sport;
 };

@@ -1,5 +1,6 @@
 const {
-  Model,
+  // eslint-disable-next-line no-unused-vars
+  Model, Op,
 } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
@@ -13,6 +14,13 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
 
+      this.belongsTo(models.User, {
+        foreignKey: {
+          name: 'userId',
+          allowNull: false,
+        },
+      });
+
       this.hasMany(models.playersList, {
         foreignKey: 'sessionId',
         onDelete: 'CASCADE',
@@ -20,13 +28,14 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     static createSessions({
-      date, location, numPlayers, sportId,
+      date, location, numPlayers, sportId, userId,
     }) {
       return this.create({
         date,
         location,
         numPlayers,
         sportId,
+        userId,
       });
     }
 
@@ -54,18 +63,42 @@ module.exports = (sequelize, DataTypes) => {
         },
       );
     }
+
+    static async joined_sessions(sessionIds) {
+      const sessions = await Promise.all(sessionIds.map((sessionId) => this.findAll({
+        where: {
+          id: sessionId,
+        },
+      })));
+      return sessions.flat();
+    }
   }
-  Session.init({
-    date: DataTypes.DATE,
-    location: DataTypes.STRING,
-    numPlayers: DataTypes.STRING,
-    sportId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+  Session.init(
+    {
+      date: DataTypes.DATE,
+      location: DataTypes.STRING,
+      numPlayers: DataTypes.STRING,
+      sportId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Sport',
+          key: 'id',
+        },
+      },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'User',
+          key: 'id',
+        },
+      },
     },
-  }, {
-    sequelize,
-    modelName: 'Session',
-  });
+    {
+      sequelize,
+      modelName: 'Session',
+    },
+  );
   return Session;
 };

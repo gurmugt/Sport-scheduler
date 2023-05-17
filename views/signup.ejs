@@ -1,44 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width,initial-scale=1.0">
-        <link href="./css/styles.css" rel="stylesheet">
-        <title>
-            <%= title %>
-        </title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link href="./css/styles.css" rel="stylesheet">
-    </head>
-    <body>
-        <body>
-            <div class= "grid  grid-cols-6">
-             <div class="col-start-3 col-span-2">
-             <%- include("header.ejs") %>
-             <h6 class="text-green-700">Signup here as a new user</h6>
-             <form action="/users" method="post">
-                <div class="py-3">
-                    <label>FirstName:</label>
-                    <input type="text" name="firstName" placeholder="First Name" class="border border-blue-300 rounded text-gray-900 w-full p-2">
-                </div>
-                <div class="py-3">
-                    <label>LastName:</label>
-                    <input type="text" name="lastName" placeholder="Last Name" class="border border-blue-300 rounded text-gray-900 w-full p-2" required >
-                </div>
-                <div class="py-3">
-                    <label>Email:</label>
-                    <input type="email" name="email" placeholder="example@email.com" class="border border-blue-300 rounded text-gray-900 w-full p-2">
-                </div>
-                <div class="py-3">
-                    <label>Password:</label>
-                    <input type="password" name="password" placeholder="password" class="border border-blue-300 rounded text-gray-900 w-full p-2" required>
-                </div>
-                <div class="py-3">
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-800 text-white px-5 py-1.5 rounded font-medium mr-2 mb-2">Sign up</button>
-                </div>
-             </form>
-             </div>
-            </div>
-        </body>
-        
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link href="./css/styles.css" rel="stylesheet">
+    <title><%= title %></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="./css/styles.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="grid grid-cols-6">
+      <div class="col-start-3 col-span-2">
+        <% include("header.ejs") %>
+        <h6 class="text-green-700">Signup here</h6>
+        <form action="/users" method="post">
+          <div class="py-3">
+            <label>FirstName:</label>
+            <input type="text" name="firstName" placeholder="First Name" class="border border-blue-300 rounded text-gray-900 w-full p-2">
+          </div>
+          <div class="py-3">
+            <label>LastName:</label>
+            <input type="text" name="lastName" placeholder="Last Name" class="border border-blue-300 rounded text-gray-900 w-full p-2" required>
+          </div>
+          <div class="py-3">
+            <label>Email:</label>
+            <input type="email" name="email" placeholder="example@email.com" class="border border-blue-300 rounded text-gray-900 w-full p-2">
+          </div>
+          <div class="py-3">
+            <label>Password:</label>
+            <input type="password" name="password" placeholder="password" class="border border-blue-300 rounded text-gray-900 w-full p-2" required>
+          </div>
+          <div class="py-3">
+            <label for="role">Role:</label>
+            <select id="role" name="role" class="border border-blue-300 rounded text-gray-900 w-full p-2">
+              <option value="user" name="user">User</option>
+              <option value="admin" name="admin">Admin</option>
+            </select>
+          </div>
+          <div id="adminKeyField" class="py-3" style="display: none;">
+            <label for="adminKey">Admin Key:</label>
+            <input type="password" id="adminKey" name="adminKey" placeholder="Admin Key" class="border border-blue-300 rounded text-gray-900 w-full p-2">
+          </div>
+          <div class="py-3">
+            <button type="submit" class="bg-blue-600 hover:bg-blue-800 text-white px-5 py-1.5 rounded font-medium mr-2 mb-2">Sign up</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script>
+      const roleSelect = document.getElementById('role');
+      const adminKeyField = document.getElementById('adminKeyField');
+
+      roleSelect.addEventListener('change', (event) => {
+        if (event.target.value === 'admin') {
+          adminKeyField.style.display = 'block';
+        } else {
+          adminKeyField.style.display = 'none';
+        }
+      });
+    </script>
+  </body>
+</html>

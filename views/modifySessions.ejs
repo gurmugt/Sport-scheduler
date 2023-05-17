@@ -95,8 +95,27 @@
                 </div>          
                 <% } %>
             </div>
+            <% if (user.id === session.userId) { %>
             <a href="/addSession/<%= session.id %>" class="mr-8">Edit Session</a>
             <button type="reset" onclick="deleteSessions(<%= session.id %>)">Cancel Session</button>
+            <% } %>
+            <% const playerNameList = playersArray.map(player => player.name); %>
+            <% if (playerNameList.includes(user.firstName)) { %>
+                <button id="delete-session-button" type="reset" 
+                onclick="leaveSession('<%= getSport.id %>','<%= session.id %>', '<%= user.id %>')">
+                Leave Session
+                </button>
+                <% } else { %>
+                <% if (session.numPlayers > 0) { %>
+                    <button id="delete-session-button" type="reset" 
+                    onclick="joinSession('<%= getSport.id %>','<%= session.id %>', '<%= user.id %>')">
+                    Join Session
+                </button>
+                <% } %>
+            <% } %>
+        
+      
+
         </div>
     </div>
     <script>
@@ -125,6 +144,35 @@
             })
             .catch((error) => console.error(error));
         }
+
+        function leaveSession(sportId, sessionId, userId) {
+            fetch(`/sport/${Number(sportId )}/createSession/${Number(sessionId)}/leave/${Number(userId)}`, {
+                method: "post",
+                headers: {
+                "Content-Type": "application/json"
+                },
+            }).then((res) => {
+                if (res.ok) {
+                console.log("Toggling Player OKkkkkkkkkkay")
+                window.location.reload();
+                }
+            }).catch((error) => console.log(error));
+        }
+        function joinSession(sportId, sessionId, userId) {
+            console.log('Join Session Function called')
+            fetch(`/sport/${Number(sportId )}/createSession/${Number(sessionId)}/join/${Number(userId)}`, {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            }).then((res) => {
+                if (res.ok) {
+                    console.log("Toggling Player OKkkkkkkkkkay")
+                    window.location.reload();
+                }
+            }).catch((error) => console.log(error));
+        }
+
     </script>
 </body>
 </html>
