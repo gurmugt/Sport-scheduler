@@ -8,14 +8,22 @@
 
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            padding: 20px;
-        }
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
 
-        h3 {
-            color: #333;
-        }
+h3 {
+    color: #333;
+    text-align: center;
+    font-size: 24px;
+    margin-top: 0; /* Add this line to remove the top margin */
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
 
         a {
             text-decoration: none;
@@ -31,45 +39,55 @@
         }
 
         .myCustomClass {
-                display: inline-block;
-                padding: 5px;
-                margin-bottom:10px;
-                border-radius:5px;
-                color: black;
-                border: 3px solid black;
-                }
+            display: inline-block;
+            padding: 10px 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .myCustomClass:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
-    <h3>Welcome <%= user.firstName%> <%= user.lastName%> </h3>
+    <h3>Welcome <%= user.firstName %> <%= user.lastName %></h3>
 
-    <!-- Adminsrative actions -->
+    <!-- Administrative actions -->
     <% if (user && user.role === 'admin') { %>   
-    <h4>Adminstrative Actions</h4>
-    <a href="/sportList/addSport">Create a new sport</a> <br>
-    <a href="#">View reports</a>
+        <h4>Administrative Actions</h4>
+        <a href="/sportList/addSport">Create a new sport</a> <br>
+        <a href="#">View reports</a>
     <% } %>
 
-   <!-- rendering joined sessions -->
+    <!-- Rendering joined sessions -->
     <% if (joined_sessions.length)  { %>
-        <h4>you have the following upcoming Sessions</h4>
-         <% for( let i = 0; i < joined_sessions.length; i++ ) { %>
-       <a href="/<%= joined_sessions[i].sportId %>/modifySessions/<%= joined_sessions[i].id %>">
-             <div>
-                 <h5 class="myCustomClass">
-          <%= joined_sessions[i].date %>  <%= joined_sessions[i].numPlayers %>  slots
-                 </h5>  
-             </div>                                                                 
-         </a>
-     <% } %>
-     <% } %>
+        <h4>You have the following upcoming sessions</h4>
+        <% for (let i = 0; i < joined_sessions.length; i++) { %>
+            <a href="/<%= joined_sessions[i].sportId %>/modifySessions/<%= joined_sessions[i].id %>">
+                <div>
+                    <h5 class="myCustomClass">
+                        <%= joined_sessions[i].date %> <%= joined_sessions[i].numPlayers %> slots
+                    </h5>
+                </div>
+            </a>
+        <% } %>
+    <% } %>
+
     <% if (sportList.length)  { %>
         <p>The following sports are available. Please select one</p>
-        <% for( let i = 0; i < sportList.length; i++ ) { %>
-          <a href="/sport/<%=sportList[i].id%>"><%= sportList[i].name %></a> <br>
-            <% } %>
-     <% } else { %>
-        <p>There are no sports available for scheduling a session</p>
+        <% for (let i = 0; i < sportList.length; i++) { %>
+            <a href="/sport/<%= sportList[i].id %>"><%= sportList[i].name %></a> <br>
         <% } %>
+    <% } else { %>
+        <p>There are no sports available for scheduling a session</p>
+    <% } %>
 </body>
 </html>

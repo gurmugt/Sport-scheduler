@@ -7,10 +7,12 @@ const express = require('express');
 const app = express();
 // eslint-disable-next-line import/no-extraneous-dependencies
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cookieParser('ssh! some secret string'));
 const passport = require('passport');
 const flash = require('connect-flash');
 const connectEnsureLogin = require('connect-ensure-login');
@@ -22,6 +24,9 @@ const {
 } = require('./models');
 
 const saltRounds = 10;
+// eslint-disable-next-line no-undef
+app.set('views', path.join(__dirname, 'views'));
+app.use(flash());
 
 // eslint-disable-next-line no-undef
 app.use(express.static(path.join(__dirname, 'public')));
@@ -33,6 +38,20 @@ app.use(session_express({
     maxAge: 24 * 60 * 60 * 1000,
   },
 }));
+
+app.use((request, response, next) => {
+  response.locals.messages = request.flash();
+  next();
+});
+
+// middleware to authenticate wether the user is an admin or not
+const isAdmin = (request, response, next) => {
+  if (request.user && request.user.role === 'admin') {
+    next();
+  } else {
+    response.status(401).json({ error: 'Unauthorized' });
+  }
+};
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -85,6 +104,24 @@ app.get('/signup', (request, response) => {
 
 // eslint-disable-next-line consistent-return
 app.post('/users', async (request, response) => {
+  if (request.body.firstName.length === 0) {
+    request.flash(
+      'error',
+      'Please, enter you First Name to create an account!',
+    );
+    return response.redirect('/signup');
+  }
+
+  if (request.body.email.length === 0) {
+    request.flash('error', 'Please, enter your Email to create an account!');
+    return response.redirect('/signup');
+  }
+
+  if (request.body.password.length < 6) {
+    request.flash('error', 'Your password must be at least 6 characters long.');
+    return response.redirect('/signup');
+  }
+
   const {
     firstName, lastName, email, password, role, adminKey,
   } = request.body;
@@ -192,7 +229,7 @@ app.get('/addSport', (request, response) => {
 });
 
 // Create a new sport
-app.post('/addSport', async (request, response) => {
+app.post('/addSport', isAdmin, async (request, response) => {
   try {
     const sport = await Sport.create({
       name: request.body.title,
@@ -228,10 +265,6 @@ app.get('/sportList', async (request, response) => {
   const player_sessions_id = (await
   playersList.findAll({ where: { name: firstName } })).map((player) => player.sessionId);
   const joined_sessions = await Session.joined_sessions(player_sessions_id);
-  console.log('joined sessions length', joined_sessions.length);
-  console.log(player_sessions_id);
-  console.log(joined_sessions);
-  console.log('player sessions id', player_sessions_id.length);
   const { user } = request;
   response.render('sportList', {
     title: 'Available Sports',
@@ -334,26 +367,27 @@ app.delete('/modifySessions/:id', async (request, response) => {
 });
 
 // Delete session
+// eslint-disable-next-line consistent-return
+app.delete('/modifySessions/:id', async (request, response) => {
+  try {
+    await playersList.removePlayers(request.params.id);
+    return response.json({ success: true });
+  } catch (error) {
+    console.log(error);
+    return response.status(422).json(error);
+  }
+});
+
+// Delete session
 app.delete('/modifySessions/sessions/:id', async (request, response) => {
   try {
     await Session.removeSessions(request.params.id);
-    return response.json({ success: true });
+    return response.render('index');
   } catch (error) {
     console.log(error);
     return response.status(422).json(error);
   }
 });
-
-app.delete('/sport/delete/:id', async (request, response) => {
-  try {
-    await Sport.deleteSport(request.params.id);
-    return response.json({ success: true });
-  } catch (error) {
-    console.log(error);
-    return response.status(422).json(error);
-  }
-});
-
 // Routing for join session
 app.post('/sport/:sportId/createSession/:sessionId/join/:userid', async (request, response) => {
   const user = await User.findByPk(Number(request.params.userid));
