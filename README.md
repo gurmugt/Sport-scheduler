@@ -45,7 +45,7 @@ https://sport-scheduler-kwlf.onrender.com/
 
 VIDEO SCREENCAST
 <img src="images/createSport.png">
-<img src="images/addSessions.png">
+<img src="images/createSessions.png">
 <img src="images/displaySessionsvid.png">
 <img src="images/editSessions.png">
 <img src="images/firstPageVid.png">
