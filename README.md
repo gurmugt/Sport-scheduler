@@ -34,12 +34,20 @@ Contact
 For any inquiries or suggestions, please contact me at https://www.linkedin.com/in/gurmu-gessese-597153244
 
 APPLICATIONS SCREENSHOT
+<img src="images/home.png">
+<img src="images/signup.png">
+<img src="images/login.png">
+<img src="images/firstPage.png">
 
 
 Live URL on application
 https://sport-scheduler-kwlf.onrender.com/
 
 VIDEO SCREENCAST
-
+<img src="images/createSport.png">
+<img src="images/addSessions.png">
+<img src="images/displaySessionsvid.png">
+<img src="images/editSessions.png">
+<img src="images/firstPageVid.png">
 
 Thank you for choosing Sport Scheduler. I hope you find it valuable in simplifying your sports scheduling and session management needs. Enjoy your sports activities and have a great time!
